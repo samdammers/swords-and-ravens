@@ -16,7 +16,6 @@ import {
 import { toast } from "react-toastify";
 import * as _ from "lodash";
 import classNames from "classnames";
-import { isMobile } from "react-device-detect";
 
 import GameClient from "./GameClient";
 import IngameGameState from "../common/ingame-game-state/IngameGameState";
@@ -73,6 +72,7 @@ import LocalStorageService from "./utils/localStorageService";
 import SimpleInfluenceIconComponent from "./game-state-panel/utils/SimpleInfluenceIconComponent";
 import VolumeSliderComponent from "./utils/VolumeSliderComponent";
 import { houseThemes } from "./utils/SfxManager";
+import { usesMobileLayout } from "./mobileLayout";
 
 export interface ColumnOrders {
   gameStateColumn: number;
@@ -340,7 +340,7 @@ export default class IngameComponent extends Component<IngameComponentProps> {
   }
 
   renderGameControlsButton(): ReactNode {
-    if (isMobile) {
+    if (usesMobileLayout()) {
       return null;
     }
 
@@ -400,7 +400,8 @@ export default class IngameComponent extends Component<IngameComponentProps> {
   }
 
   renderTracksPopoverButton(tracks: InfluenceTrackDetails[]): ReactNode {
-    if (isMobile) {
+    const mobileLayout = usesMobileLayout();
+    if (mobileLayout) {
       return null;
     }
 
@@ -470,8 +471,8 @@ export default class IngameComponent extends Component<IngameComponentProps> {
         <div
           className={classNames("clickable btn btn-sm btn-secondary p-1", {
             "d-xl-none d-xxl-none":
-              !isMobile && this.gameSettings.playerCount < 8,
-            "d-xxl-none": !isMobile && this.gameSettings.playerCount >= 8
+              !mobileLayout && this.gameSettings.playerCount < 8,
+            "d-xxl-none": !mobileLayout && this.gameSettings.playerCount >= 8
           })}
           onClick={() => {
             this.tracksPopoverVisible = !this.tracksPopoverVisible;
@@ -980,7 +981,8 @@ export default class IngameComponent extends Component<IngameComponentProps> {
       "dontShowScrollbarHintsAgain"
     );
 
-    const dontShowAgain = isMobile || (dontShowAgainFromStorage ?? false);
+    const mobileLayout = usesMobileLayout();
+    const dontShowAgain = mobileLayout || (dontShowAgainFromStorage ?? false);
     if (
       screen.width < 1920 &&
       screen.height < 1080 &&

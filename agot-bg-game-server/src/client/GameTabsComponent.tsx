@@ -14,7 +14,6 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import classNames from "classnames";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
-import { isMobile } from "react-device-detect";
 import * as _ from "lodash";
 
 import IngameGameState from "../common/ingame-game-state/IngameGameState";
@@ -42,6 +41,7 @@ import {
   faHistory,
   faUniversity
 } from "@fortawesome/free-solid-svg-icons";
+import { usesMobileLayout } from "./mobileLayout";
 
 import cardRandomImage from "../../public/images/icons/card-random.svg";
 import expandImage from "../../public/images/icons/expand.svg";
@@ -88,6 +88,7 @@ export default class GameTabsComponent extends Component<GameTabsComponentProps>
   }
 
   render(): ReactNode {
+    const mobileLayout = usesMobileLayout();
     const height = this.logChatFullScreen
       ? "85%"
       : this.gameClient.isMapScrollbarSet
@@ -326,7 +327,7 @@ export default class GameTabsComponent extends Component<GameTabsComponentProps>
                   <Dropdown.Menu>{this.gameRoundElems}</Dropdown.Menu>
                 </Dropdown>
               )}
-              {isMobile && !this.logChatFullScreen && (
+              {mobileLayout && !this.logChatFullScreen && (
                 <button
                   className="btn btn-secondary ml-auto"
                   onClick={() => {
@@ -373,7 +374,7 @@ export default class GameTabsComponent extends Component<GameTabsComponentProps>
                 </Tab.Pane>
               )}
               <Tab.Pane eventKey="game-logs" className="h-100">
-                {this.currentOpenedTab == "game-logs" || !isMobile ? (
+                {this.currentOpenedTab == "game-logs" || !mobileLayout ? (
                   <div className="d-flex flex-column h-100">
                     <ScrollToBottom
                       className="flex-fill-remaining"

@@ -14,7 +14,7 @@ import {
   getGameSetupContainer
 } from "../common/ingame-game-state/game-data-structure/createGame";
 import IngameGameState from "../common/ingame-game-state/IngameGameState";
-import { isMobile } from "react-device-detect";
+import { usesMobileLayout } from "./mobileLayout";
 
 interface GameSettingsComponentProps {
   gameClient: GameClient;
@@ -802,7 +802,7 @@ export default class GameSettingsComponent extends Component<GameSettingsCompone
                       </Tooltip>
                     }
                     delay={{ show: 0, hide: 1500 }}
-                    placement={isMobile ? "auto" : "bottom"}
+                    placement={usesMobileLayout() ? "auto" : "bottom"}
                   >
                     <label htmlFor="custom-balancing-setting">
                       Custom Balancing

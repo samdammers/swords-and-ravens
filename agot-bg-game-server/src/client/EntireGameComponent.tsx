@@ -32,10 +32,10 @@ import CombatGameState from "../common/ingame-game-state/action-game-state/resol
 import { toast, ToastContainer } from "react-toastify";
 import { cssTransition } from "react-toastify";
 import ClockComponent from "./ClockComponent";
-import { isMobile } from "react-device-detect";
 import ReplayComponent from "./ReplayComponent";
 import ConditionalWrap from "./utils/ConditionalWrap";
 import classNames from "classnames";
+import { usesMobileLayout } from "./mobileLayout";
 
 const yourTurnToastAnimation = cssTransition({
   enter: "slide-in-elliptic-top-fwd",
@@ -89,6 +89,7 @@ export default class EntireGameComponent extends Component<EntireGameComponentPr
   }
 
   render(): ReactNode {
+    const mobileLayout = usesMobileLayout();
     return (
       <>
         <Helmet>
@@ -110,7 +111,7 @@ export default class EntireGameComponent extends Component<EntireGameComponentPr
         >
           <Row
             className={classNames("justify-content-center align-items-center", {
-              "flex-nowrap": !isMobile && this.entireGame.name.length > 90
+              "flex-nowrap": !mobileLayout && this.entireGame.name.length > 90
             })}
           >
             {this.entireGame.ingameGameState?.replayManager.isReplayMode ? (
@@ -164,10 +165,10 @@ export default class EntireGameComponent extends Component<EntireGameComponentPr
         <ToastContainer
           autoClose={6000}
           position="top-center"
-          closeOnClick={!isMobile}
+          closeOnClick={!mobileLayout}
           pauseOnFocusLoss
           pauseOnHover
-          draggable={isMobile}
+          draggable={mobileLayout}
           draggablePercent={60}
           limit={3}
           theme="dark"
@@ -178,7 +179,7 @@ export default class EntireGameComponent extends Component<EntireGameComponentPr
   }
 
   private renderGameName(): ReactNode {
-    if (this.entireGame.name.length < 90 || isMobile) {
+    if (this.entireGame.name.length < 90 || usesMobileLayout()) {
       return (
         <Col xs="auto" className="px-3">
           <h4>{this.entireGame.name}</h4>

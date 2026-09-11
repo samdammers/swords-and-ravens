@@ -8,11 +8,11 @@ import Col from "react-bootstrap/Col";
 import EntireGameComponent from "./EntireGameComponent";
 import Alert from "react-bootstrap/Alert";
 import User from "../server/User";
-import { isMobile } from "react-device-detect";
 import EntireGame from "../common/EntireGame";
 import IngameGameState from "../common/ingame-game-state/IngameGameState";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { usesMobileLayout } from "./mobileLayout";
 
 interface AppProps {
   gameClient: GameClient;
@@ -55,8 +55,9 @@ export default class App extends Component<AppProps> {
   }
 
   render(): ReactNode {
+    const mobileLayout = usesMobileLayout();
     const minWidth =
-      isMobile && this.isGameRunning && !this.isFullScreen
+      mobileLayout && this.isGameRunning && !this.isFullScreen
         ? this.is8pGame
           ? "2550px"
           : "2000px"

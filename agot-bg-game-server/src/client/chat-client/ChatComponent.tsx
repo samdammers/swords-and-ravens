@@ -26,7 +26,6 @@ import EmojiPicker, {
   SuggestionMode,
   Theme
 } from "emoji-picker-react";
-import { isMobile } from "react-device-detect";
 import classNames from "classnames";
 import moment from "moment";
 import ConditionalWrap from "../utils/ConditionalWrap";
@@ -41,6 +40,7 @@ import spikedDragonHeadImage from "../../../public/images/icons/spiked-dragon-he
 import barrelImage from "../../../public/images/icons/barrel.svg";
 import mammothImage from "../../../public/images/icons/mammoth.svg";
 import crownImage from "../../../public/images/icons/crown.svg";
+import { usesMobileLayout } from "../mobileLayout";
 
 interface ChatComponentProps {
   gameClient: GameClient;
@@ -382,9 +382,11 @@ export default class ChatComponent extends Component<ChatComponentProps> {
                     >
                       <EmojiPicker
                         theme={Theme.DARK}
-                        autoFocusSearch={!isMobile}
+                        autoFocusSearch={!usesMobileLayout()}
                         emojiStyle={
-                          isMobile ? EmojiStyle.NATIVE : EmojiStyle.APPLE
+                          usesMobileLayout()
+                            ? EmojiStyle.NATIVE
+                            : EmojiStyle.APPLE
                         }
                         suggestedEmojisMode={SuggestionMode.RECENT}
                         lazyLoadEmojis={true}
