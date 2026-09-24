@@ -163,9 +163,13 @@
                 <ul id="game-settings-modal-settings" class="list-disc list-inside space-y-0.5 text-sm"></ul>
                 <p id="game-settings-modal-no-settings" class="opacity-70 italic text-sm hidden">No optional settings enabled</p>
             </div>
-            <div id="game-settings-modal-waiting-footer" class="hidden">
+            <div id="game-settings-modal-status-footer" class="hidden">
                 <div class="divider my-2"></div>
-                <p class="text-sm"><span class="opacity-70">Waiting for</span> <span id="game-settings-modal-waiting-for"></span></p>
+                <p class="text-sm flex items-center gap-2">
+                    <i id="game-settings-modal-status-crown" class="fa-solid fa-crown" title="Won" aria-label="Won" hidden></i>
+                    <span id="game-settings-modal-status-label" class="opacity-70"></span>
+                    <span id="game-settings-modal-status-value"></span>
+                </p>
             </div>
             <div class="modal-action">
                 <form method="dialog">

@@ -102,6 +102,8 @@ export default class ActionGameState extends GameState<
 
   onResolveRaidOrderGameStateFinish(): void {
     // In case of no support orders (web of lies) now remove raid/support orders
+    // This should be dead code now as according to the rule clarification,
+    // raid/support+1 orders cannot be placed during web of lies anymore
     if (this.planningRestrictions.some((pr) => pr == noSupportOrder)) {
       const regionsWithRaidSupportPlusOneOrders = this.ordersOnBoard.entries
         .filter(([_r, o]) => o.type == raidSupportPlusOne)
@@ -129,7 +131,7 @@ export default class ActionGameState extends GameState<
     log = false,
     house: House | undefined = undefined,
     resolvedAutomatically = false,
-    animate: "yellow" | "red" | undefined = undefined
+    animate: "yellow" | "red" | "grey" | undefined = undefined
   ): Order | null {
     if (this.ordersOnBoard.has(region)) {
       const order = this.ordersOnBoard.get(region);

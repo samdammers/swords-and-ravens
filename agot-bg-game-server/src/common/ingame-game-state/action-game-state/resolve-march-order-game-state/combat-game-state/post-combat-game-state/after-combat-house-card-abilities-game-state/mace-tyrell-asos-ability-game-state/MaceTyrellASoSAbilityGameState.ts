@@ -122,7 +122,7 @@ export default class MaceTyrellASoSAbilityGameState extends GameState<
         type: "action-phase-change-order",
         region: this.combatGameState.defendingRegion.id,
         order: chosenOrder.id,
-        animate: "white"
+        animate: "grey"
       });
       this.ingame.log(
         {

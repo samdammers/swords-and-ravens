@@ -162,6 +162,7 @@
                                                     data-last-active-at="@(game.State == GameState.InLobby ? null : game.LastActiveAt.ToString("O"))"
                                                     data-round="@(game.State != GameState.InLobby ? (game.Turn?.ToString() ?? "?") : null)"
                                                     data-waiting-for="@game.WaitingFor"
+                                                    data-winner="@game.Winner"
                                                     data-settings="@string.Join("|", game.EnabledSettingLabels)">
                                                 <i class="fas fa-gear"></i>
                                             </button>
@@ -323,6 +324,7 @@
                                                     data-last-active-at="@game.LastActiveAt.ToString("O")"
                                                     data-round="@(game.Turn?.ToString() ?? "?")"
                                                     data-waiting-for="@game.WaitingFor"
+                                                    data-winner="@game.Winner"
                                                     data-settings="@string.Join("|", game.EnabledSettingLabels)">
                                                 <i class="fas fa-gear"></i>
                                             </button>

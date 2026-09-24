@@ -84,11 +84,19 @@ document.addEventListener("click", function (event) {
     roundValue.textContent = gearButton.dataset.round || "";
     roundLabel.classList.toggle("hidden", !hasRound);
     roundValue.classList.toggle("hidden", !hasRound);
-    var waitingFooter = modal.querySelector("#game-settings-modal-waiting-footer");
-    var waitingValue = modal.querySelector("#game-settings-modal-waiting-for");
+    var statusFooter = modal.querySelector("#game-settings-modal-status-footer");
+    var statusLabel = modal.querySelector("#game-settings-modal-status-label");
+    var statusValue = modal.querySelector("#game-settings-modal-status-value");
+    var statusCrown = modal.querySelector("#game-settings-modal-status-crown");
+    var winner = gearButton.dataset.winner || "";
     var waitingFor = gearButton.dataset.waitingFor || "";
-    waitingValue.textContent = waitingFor;
-    waitingFooter.classList.toggle("hidden", !waitingFor);
+    var showingWinner = Boolean(winner);
+    var footerLabel = showingWinner ? "Winner:" : (waitingFor ? "Waiting for" : "");
+    var footerValue = winner || waitingFor;
+    statusLabel.textContent = footerLabel;
+    statusValue.textContent = footerValue;
+    statusCrown.hidden = !showingWinner;
+    statusFooter.classList.toggle("hidden", !footerValue);
 
     var settingsList = modal.querySelector("#game-settings-modal-settings");
     var noSettingsMessage = modal.querySelector("#game-settings-modal-no-settings");

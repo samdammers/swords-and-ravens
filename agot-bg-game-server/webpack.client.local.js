@@ -1,6 +1,5 @@
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = (env, argv) => {
   return {
@@ -11,8 +10,6 @@ module.exports = (env, argv) => {
     },
     entry: "./src/client/client.tsx",
     target: "web",
-    // No source maps in production so original TS/TSX source isn't exposed via browser devtools.
-    devtool: false,
     module: {
       rules: [
         {
@@ -96,17 +93,12 @@ module.exports = (env, argv) => {
         process: "process/browser"
       })
     ],
+    // Keep --mode=production behavior (e.g. NODE_ENV) but skip minification so
+    // stack traces/sources in devtools stay readable without relying on source maps.
     optimization: {
-      minimizer: [
-        new TerserPlugin({
-          terserOptions: {
-            output: {
-              comments: false
-            }
-          }
-        })
-      ]
+      minimize: false
     },
+    devtool: "source-map",
     devServer: {
       proxy: {
         "/ws": {

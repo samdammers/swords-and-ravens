@@ -82,6 +82,7 @@ export type ServerMessage =
   | UpdateOldPlayerHouseCards
   | LoyaltyTokenGained
   | LoyaltyTokenPlaced
+  | LoyaltyTokenMoved
   | DrangonStrengthTokenRemoved
   | UpdateLoanCards
   | UpdateRegionModifiers
@@ -305,7 +306,7 @@ interface ActionPhaseChangeOrder {
   type: "action-phase-change-order";
   region: string;
   order: number | null;
-  animate?: "yellow" | "red" | "white";
+  animate?: "yellow" | "red" | "grey";
 }
 
 interface ChangeGarrison {
@@ -488,6 +489,12 @@ interface LoyaltyTokenPlaced {
   type: "loyalty-token-placed";
   region: string;
   newLoyaltyTokenCount: number;
+}
+
+interface LoyaltyTokenMoved {
+  type: "loyalty-token-moved";
+  from: string;
+  to: string;
 }
 
 interface DrangonStrengthTokenRemoved {

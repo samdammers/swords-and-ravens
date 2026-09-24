@@ -70,6 +70,7 @@ public class UserModel(
         int? MaxPlayerCount,
         int? Turn,
         string? WaitingFor,
+        string? Winner,
         DateTimeOffset CreatedAt,
         DateTimeOffset LastActiveAt,
         DateTimeOffset? ReplacedAt,
@@ -296,6 +297,7 @@ public class UserModel(
             .Select(row =>
             {
                 var view = ViewOfGameInfo.Parse(row.ViewOfGame);
+                var winner = GetStringProperty(row.ViewOfGame, "winner");
                 return new PreviouslyParticipatedGameRow(
                     row.Id,
                     row.Name,
@@ -304,6 +306,7 @@ public class UserModel(
                     view.MaxPlayerCount,
                     view.Turn,
                     view.WaitingFor,
+                    winner,
                     row.CreatedAt,
                     row.LastActiveAt,
                     row.ReplacedAt,

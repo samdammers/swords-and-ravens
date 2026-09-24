@@ -148,7 +148,7 @@ export default class ReplaceOrderGameState extends GameState<UseRavenGameState> 
         this.ingameGameState.addOrderAnimation(
           region,
           {
-            highlight: { active: true, color: "white" },
+            highlight: { active: true, color: "yellow" },
             animateAttention: true
           },
           3000

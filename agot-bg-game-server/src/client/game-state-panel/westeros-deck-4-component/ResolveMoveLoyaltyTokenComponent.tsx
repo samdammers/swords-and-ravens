@@ -82,7 +82,13 @@ export default class ResolveMoveLoyaltyTokenComponent extends Component<
       return;
     }
 
-    this.gameState.sendMovePowerTokens(this.from, this.to);
+    const from = this.from;
+    const to = this.to;
+
+    // Undo the local preview now, otherwise it stacks with the server's authoritative "loyalty-token-moved" broadcast
+    this.reset();
+
+    this.gameState.sendMovePowerTokens(from, to);
   }
 
   private reset(): void {

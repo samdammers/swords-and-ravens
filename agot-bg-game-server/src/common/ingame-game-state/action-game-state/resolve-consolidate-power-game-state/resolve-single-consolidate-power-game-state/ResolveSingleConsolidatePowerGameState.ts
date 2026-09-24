@@ -129,7 +129,11 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
 
       // Remove the order from the board
       this.actionGameState.removeOrderFromRegion(
-        regionToResolveCpAutomatically
+        regionToResolveCpAutomatically,
+        false,
+        undefined,
+        undefined,
+        "yellow"
       );
 
       // Proceed to the next house
@@ -148,7 +152,8 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
         region,
         true,
         this.house,
-        true
+        true,
+        "grey"
       );
       this.onResolveSingleConsolidatePowerFinish();
       return;
@@ -169,7 +174,8 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
         region,
         true,
         this.house,
-        true
+        true,
+        "grey"
       );
       this.onResolveSingleConsolidatePowerFinish();
     }
@@ -260,8 +266,8 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
           this.actionGameState.removeOrderFromRegion(
             regionOfOrder,
             false,
-            this.house,
-            false,
+            undefined,
+            undefined,
             "yellow"
           );
           this.onResolveSingleConsolidatePowerFinish();
@@ -307,8 +313,8 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
         this.actionGameState.removeOrderFromRegion(
           regionOfOrder,
           false,
-          this.house,
-          false,
+          undefined,
+          undefined,
           "yellow"
         );
         loan.execute(this, this.house);
@@ -319,7 +325,7 @@ export default class ResolveSingleConsolidatePowerGameState extends GameState<Re
           true,
           this.house,
           false,
-          "yellow"
+          "grey"
         );
         this.onResolveSingleConsolidatePowerFinish();
       }

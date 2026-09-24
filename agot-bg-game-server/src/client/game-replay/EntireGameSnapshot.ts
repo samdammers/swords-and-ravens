@@ -56,6 +56,12 @@ export default class EntireGameSnapshot implements IEntireGameSnapshot {
     return this._controllerMap.tryGet(region, null);
   }
 
+  updateBraavosController(): void {
+    if (!this._regionMap.has("braavos") || !this.gameSnapshot?.ironBank) return;
+    this.gameSnapshot.ironBank.braavosController =
+      this.getController("braavos")?.id;
+  }
+
   getHouse(id: string): HouseSnapshot {
     if (!this._houseMap.has(id)) {
       throw new Error(`HouseSnapshot ${id} not found in snapshot houses map`);
@@ -176,7 +182,7 @@ export default class EntireGameSnapshot implements IEntireGameSnapshot {
         (h: HouseSnapshot) => -this.getLandRegionCount(h.id),
         (h: HouseSnapshot) => -h.supply,
         (h: HouseSnapshot) =>
-          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1,
+          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1
       ];
     } else if (!isLastRound) {
       victoryConditions = [
@@ -184,14 +190,14 @@ export default class EntireGameSnapshot implements IEntireGameSnapshot {
         (h: HouseSnapshot) => -this.getVictoryPoints(h.id),
         (h: HouseSnapshot) => -this.getLandRegionCount(h.id),
         (h: HouseSnapshot) =>
-          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1,
+          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1
       ];
     } else {
       victoryConditions = [
         (h: HouseSnapshot) => (h.isVassal ? 1 : -1),
         (h: HouseSnapshot) => -this.getVictoryPoints(h.id),
         (h: HouseSnapshot) =>
-          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1,
+          this.gameSnapshot?.ironThroneTrack.indexOf(h.id) ?? -1
       ];
     }
     return victoryConditions;

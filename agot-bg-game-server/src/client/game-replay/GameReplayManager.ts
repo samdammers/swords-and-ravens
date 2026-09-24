@@ -118,6 +118,7 @@ export default class GameReplayManager {
     }
 
     snap.calculateControllersPerRegion();
+    snap.updateBraavosController();
 
     const selectedLog = this.logManager.logs[index].data;
 

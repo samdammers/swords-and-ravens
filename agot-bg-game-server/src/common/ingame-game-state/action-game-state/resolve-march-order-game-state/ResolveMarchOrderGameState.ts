@@ -203,6 +203,8 @@ export default class ResolveMarchOrderGameState extends GameState<
 
     if (controllerToRegion != units[0].allegiance) {
       // If there was an order from an other house, remove it
+      // Unfortunately we can't animate this as abilities like
+      // Loras Tyrell may place a new order in the region
       this.actionGameState.removeOrderFromRegion(to, true);
 
       // If there was a power token from an other house, remove it

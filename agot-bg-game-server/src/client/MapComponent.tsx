@@ -1141,7 +1141,11 @@ export default class MapComponent extends Component<MapComponentProps> {
             "hover-weak-outline":
               order != null && !properties.highlight?.active,
             "medium-outline hover-strong-outline":
-              order && properties.highlight?.active,
+              order &&
+              properties.highlight?.active &&
+              properties.highlight.color != "red" &&
+              properties.highlight.color != "yellow" &&
+              properties.highlight.color != "grey",
             "highlight-yellow hover-strong-outline-yellow":
               order &&
               properties.highlight?.active &&
@@ -1150,6 +1154,10 @@ export default class MapComponent extends Component<MapComponentProps> {
               order &&
               properties.highlight?.active &&
               properties.highlight.color == "red",
+            "highlight-grey hover-strong-outline-grey":
+              order &&
+              properties.highlight?.active &&
+              properties.highlight.color == "grey",
             "restricted-order":
               planningOrAction &&
               order &&
@@ -1176,7 +1184,7 @@ export default class MapComponent extends Component<MapComponentProps> {
             boxClassName="order-icon"
             style={{ borderColor: color }}
             className={classNames(placeAnimation, {
-              "order-border": drawBorder,
+              "order-border": drawBorder && !flipToBackgroundUrl,
               "pulsate-bck": properties.animateAttention,
               "pulsate-bck_fade-out": properties.animateFadeOut
             })}

@@ -104,10 +104,9 @@ public enum PlayerReplacementReason
 /// current game server every mid-game removal path (vote/timeout vassalization as well as a
 /// player-for-player replace vote) pushes the removed user's id into one of those arrays, so a
 /// null Reason on a row created by the live endpoint (<see cref="ReplacedAt"/> set) only ever
-/// happens for the now-fixed lobby-seat-change bug - see
-/// <see cref="PreviousPlayerCleanup"/>. The historical backfill can also leave Reason null for
-/// legacy pre-feature games, but always leaves <see cref="ReplacedAt"/> null instead, which is how
-/// the two cases are told apart.
+/// happens for the now-fixed lobby-seat-change bug. The historical backfill can also leave Reason
+/// null for legacy pre-feature games, but always leaves <see cref="ReplacedAt"/> null instead,
+/// which is how the two cases are told apart.
 /// </summary>
 public class PreviousPlayerInGame
 {

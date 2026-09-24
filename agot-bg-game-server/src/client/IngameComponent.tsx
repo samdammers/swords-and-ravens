@@ -74,6 +74,9 @@ import LocalStorageService from "./utils/localStorageService";
 import SimpleInfluenceIconComponent from "./game-state-panel/utils/SimpleInfluenceIconComponent";
 import VolumeSliderComponent from "./utils/VolumeSliderComponent";
 import { houseThemes } from "./utils/SfxManager";
+import LoanCardComponent from "./game-state-panel/utils/LoanCardComponent";
+import { customsOfficer } from "../common/ingame-game-state/game-data-structure/loan-card/loanCardTypes";
+import { LoanPurchased } from "../common/ingame-game-state/game-data-structure/GameLog";
 
 export interface ColumnOrders {
   gameStateColumn: number;
@@ -1033,6 +1036,52 @@ export default class IngameComponent extends Component<IngameComponentProps> {
 
     this.ingame.onLogReceived = (log) => {
       this.gameClient.sfxManager.playSoundForLogEvent(log);
+
+      if (log.type === "customs-officer-power-tokens-gained") {
+        const loanPurchasedLog = _.findLast(
+          this.ingame.gameLogManager.logs,
+          (l) =>
+            l.data.type == "loan-purchased" &&
+            l.data.loanType == "customs-officer"
+        );
+
+        const loanPurchased = loanPurchasedLog
+          ? (loanPurchasedLog.data as LoanPurchased)
+          : null;
+
+        const region = loanPurchased
+          ? this.game.world.regions.get(loanPurchased.region)
+          : null;
+
+        const house = this.game.houses.get(log.house);
+        toast(
+          <div>
+            <h5 className="text-center mb-2">Customs Officer purchased</h5>
+            <div className="d-flex justify-content-center">
+              <LoanCardComponent loanCard={customsOfficer} />
+            </div>
+            <div className="d-flex justify-content-center">
+              {loanPurchased && region ? (
+                <p className="text-center mt-3">
+                  House <b>{house.name}</b> resolved an <b>Iron Bank</b> order
+                  in <b>{region.name}</b>,<br />
+                  paying <b>{loanPurchased.paid}</b> Power tokens for the{" "}
+                  <b>Customs Officer</b>.<br />
+                  They gained <b>{log.gained}</b> Power&nbsp;token
+                  {log.gained != 1 ? "s" : ""}.
+                </p>
+              ) : (
+                <p className="text-center mt-3">
+                  House <b>{house.name}</b> gained <b>{log.gained}</b>{" "}
+                  Power&nbsp;token
+                  {log.gained != 1 ? "s" : ""}.
+                </p>
+              )}
+            </div>
+          </div>,
+          { toastId: "customs-officer-toast" }
+        );
+      }
     };
 
     this.ingame.onGamePaused = () => {

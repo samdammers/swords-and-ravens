@@ -3524,8 +3524,13 @@ export default class GameLogListComponent extends Component<GameLogListComponent
     prevProps: Readonly<GameLogListComponentProps>,
     _prevState: Readonly<Record<string, unknown>>
   ): void {
+    if (this.replayManager.isReplayMode) {
+      return;
+    }
+
+    const now = this.props.ingameGameState.entireGame.now;
     if (this.props.currentlyViewed) {
-      this.debounceSendGameLogSeen(timeToTicks(new Date()));
+      this.debounceSendGameLogSeen(timeToTicks(now));
     }
 
     if (
@@ -3535,14 +3540,15 @@ export default class GameLogListComponent extends Component<GameLogListComponent
     ) {
       this.logManager.lastSeenLogTimes.set(
         this.props.gameClient.authenticatedUser,
-        timeToTicks(new Date())
+        timeToTicks(now)
       );
     }
   }
 
   componentDidMount(): void {
+    const now = this.props.ingameGameState.entireGame.now;
     if (this.props.currentlyViewed) {
-      this.logManager.sendGameLogSeen(timeToTicks(new Date()));
+      this.logManager.sendGameLogSeen(timeToTicks(now));
     }
   }
 }

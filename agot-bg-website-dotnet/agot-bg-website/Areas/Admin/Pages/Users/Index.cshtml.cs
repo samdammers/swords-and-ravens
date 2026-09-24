@@ -18,6 +18,10 @@ public class IndexModel(
 {
     private const int DefaultPageSize = 10;
 
+    /// <summary>Allowed values for <see cref="SortBy"/>. Roles aren't included - a user can have
+    /// several, so there's no single well-defined sort order for that column.</summary>
+    private static readonly string[] SortColumns = ["username", "email", "created"];
+
     [BindProperty(SupportsGet = true)]
     public string? Search { get; set; }
 
@@ -26,6 +30,26 @@ public class IndexModel(
 
     [BindProperty(SupportsGet = true)]
     public int PageSize { get; set; } = DefaultPageSize;
+
+    [BindProperty(SupportsGet = true)]
+    public string SortBy { get; set; } = "username";
+
+    [BindProperty(SupportsGet = true)]
+    public string SortDir { get; set; } = "asc";
+
+    /// <summary>Direction a click on <paramref name="column"/>'s header should sort by next -
+    /// toggles the current direction if it's already the active sort column, otherwise starts
+    /// ascending. Used by the view to build each header's link.</summary>
+    public string NextSortDir(string column) =>
+        SortBy.Equals(column, StringComparison.OrdinalIgnoreCase) && SortDir == "asc"
+            ? "desc"
+            : "asc";
+
+    /// <summary>Arrow to render next to a header, or empty if that column isn't the active sort.</summary>
+    public string SortIndicator(string column) =>
+        SortBy.Equals(column, StringComparison.OrdinalIgnoreCase)
+            ? (SortDir == "asc" ? "▲" : "▼")
+            : "";
 
     public List<ApplicationUser> Users { get; set; } = [];
 
@@ -44,6 +68,28 @@ public class IndexModel(
         }
         PageSize = PagingExtensions.NormalizePageSize(PageSize, DefaultPageSize);
 
+        // Restore the last-viewed page/sort only on a completely fresh, query-less navigation
+        // (e.g. clicking "Users" in the Admin nav) - as soon as ANY querystring parameter is
+        // present (a search, a sort-header click, a pager link, ...) that request's own
+        // querystring/model-bound values are trusted as-is, matching the public "/Users" page's
+        // identical restore logic (see Pages.UsersModel.OnGetAsync).
+        if (!Request.QueryString.HasValue)
+        {
+            var saved = AdminUsersListPreferencesCookie.Read(Request);
+            if (saved is { } prefs)
+            {
+                PageNumber = prefs.PageNumber;
+                SortBy = prefs.SortBy;
+                SortDir = prefs.SortDir;
+            }
+        }
+
+        if (!SortColumns.Contains(SortBy, StringComparer.OrdinalIgnoreCase))
+        {
+            SortBy = "username";
+        }
+        SortDir = SortDir == "desc" ? "desc" : "asc";
+
         var query = userManager.Users.AsQueryable();
         if (!string.IsNullOrWhiteSpace(Search))
         {
@@ -55,7 +101,20 @@ public class IndexModel(
             );
         }
 
-        var paged = await query.OrderBy(u => u.UserName).ToPagedResultAsync(PageNumber, PageSize);
+        // Every non-username column ties-break on username too, so paging stays stable/reproducible.
+        var ordered = (SortBy, SortDir) switch
+        {
+            ("email", "desc") => query.OrderByDescending(u => u.Email).ThenBy(u => u.UserName),
+            ("email", _) => query.OrderBy(u => u.Email).ThenBy(u => u.UserName),
+            ("created", "desc") => query
+                .OrderByDescending(u => u.CreatedAt)
+                .ThenBy(u => u.UserName),
+            ("created", _) => query.OrderBy(u => u.CreatedAt).ThenBy(u => u.UserName),
+            (_, "desc") => query.OrderByDescending(u => u.UserName),
+            _ => query.OrderBy(u => u.UserName),
+        };
+
+        var paged = await ordered.ToPagedResultAsync(PageNumber, PageSize);
         Users = paged.Items;
         Pager = paged.Pager;
 
@@ -63,6 +122,8 @@ public class IndexModel(
         {
             RolesByUserId[user.Id] = await userManager.GetRolesAsync(user);
         }
+
+        AdminUsersListPreferencesCookie.Persist(Response, PageNumber, SortBy, SortDir);
     }
 
     public async Task<IActionResult> OnPostToggleBanAsync(Guid id)
@@ -105,6 +166,8 @@ public class IndexModel(
                 Search,
                 PageNumber,
                 PageSize,
+                SortBy,
+                SortDir,
             }
         );
     }
@@ -129,6 +192,8 @@ public class IndexModel(
                 Search,
                 PageNumber,
                 PageSize,
+                SortBy,
+                SortDir,
             }
         );
     }
@@ -161,6 +226,8 @@ public class IndexModel(
                 Search,
                 PageNumber,
                 PageSize,
+                SortBy,
+                SortDir,
             }
         );
     }
@@ -190,6 +257,8 @@ public class IndexModel(
                 Search,
                 PageNumber,
                 PageSize,
+                SortBy,
+                SortDir,
             }
         );
     }

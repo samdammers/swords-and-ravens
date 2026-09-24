@@ -1155,7 +1155,7 @@ interface MoveLoyaltyTokenChoice {
   powerTokensDiscardedToCancelMovement?: number;
 }
 
-interface LoanPurchased {
+export interface LoanPurchased {
   type: "loan-purchased";
   house: string;
   region: string;

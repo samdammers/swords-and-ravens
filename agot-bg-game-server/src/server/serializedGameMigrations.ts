@@ -3174,6 +3174,51 @@ const serializedGameMigrations: {
 
       return serializedGame;
     }
+  },
+  {
+    version: "138",
+    migrate: (serializedGame: any) => {
+      if (serializedGame.childGameState.type != "ingame") {
+        return serializedGame;
+      }
+
+      // Ids can occur in many places (logs, draft pool, deleted/previous house cards, etc.),
+      // so rename them by replacing the exact quoted JSON string everywhere instead of
+      // hunting down every place an id is referenced.
+      const idRenames: [string, string][] = [
+        ["robert-baratheon-1st", "house-florent-lord-1st"],
+        ["cercei-lannister-1st", "cersei-lannister-1st"],
+        ["sir-rodrik-cassel-1st", "ser-rodrick-cassel-1st"],
+        ["margery-tyrell-1st", "margaery-tyrell-1st"]
+      ];
+
+      const nameRenames: [string, string][] = [
+        ["Axell Florent", "Ser Axell Florent"],
+        ["Robert Baratheon", "House Florent Lord"],
+        ["Blacktyde Captain", "House Blacktyde Captain"],
+        ["Cercei Lannister", "Cersei Lannister"],
+        ["Jaime Lannister", "Ser Jaime Lannister"],
+        ["Lannister Captain", "House Lannister Captain"],
+        ["Lord Mormont", "House Mormont Lord"],
+        ["Sir Rodrik Cassel", "Ser Rodrick Cassel"],
+        ["Margery Tyrell", "Margaery Tyrell"],
+        ["Loras Tyrell", "Ser Loras Tyrell"],
+        ["Garlan Tyrell", "Ser Garlan Tyrell"],
+        ["Tyrell Captain", "House Tyrell Captain"]
+      ];
+
+      let json = JSON.stringify(serializedGame);
+      idRenames.forEach(([oldId, newId]) => {
+        const regex = new RegExp(`"${oldId}"`, "g");
+        json = json.replace(regex, `"${newId}"`);
+      });
+      nameRenames.forEach(([oldName, newName]) => {
+        const regex = new RegExp(`"${oldName}"`, "g");
+        json = json.replace(regex, `"${newName}"`);
+      });
+      serializedGame = JSON.parse(json);
+      return serializedGame;
+    }
   }
 ];
 

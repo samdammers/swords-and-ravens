@@ -144,9 +144,9 @@ export default class ResolveSingleRaidOrderGameState extends GameState<ResolveRa
       this.actionGameState.removeOrderFromRegion(
         targetRegion,
         false,
-        this.house,
-        false,
-        !resolvedAutomatically ? "yellow" : undefined
+        undefined,
+        undefined,
+        "yellow"
       );
 
       this.ingameGameState.log(
@@ -183,9 +183,9 @@ export default class ResolveSingleRaidOrderGameState extends GameState<ResolveRa
       this.actionGameState.removeOrderFromRegion(
         orderRegion,
         false,
-        this.house,
-        false,
-        targetRegion != null ? "red" : "yellow"
+        undefined,
+        undefined,
+        targetRegion != null ? "red" : "grey"
       );
     } else if (
       orderType instanceof RaidSupportOrderType &&

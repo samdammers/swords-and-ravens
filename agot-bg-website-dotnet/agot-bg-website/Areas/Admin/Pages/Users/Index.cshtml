@@ -1,8 +1,29 @@
 @page
 @model agot_bg_website.Areas.Admin.Pages.Users.IndexModel
+@using Microsoft.AspNetCore.Html
 @using agot_bg_website.Infrastructure.Auth
 @{
     ViewData["Title"] = "Admin - Users";
+
+    // Builds a sortable column header link that preserves the current search/page-size and
+    // resets back to page 1 (sorting differently makes the previous page number meaningless).
+    IHtmlContent SortHeader(string column, string label)
+    {
+        var url = Url.Page(
+            "./Index",
+            new
+            {
+                Search = Model.Search,
+                PageNumber = 1,
+                PageSize = Model.PageSize,
+                SortBy = column,
+                SortDir = Model.NextSortDir(column),
+            }
+        );
+        var indicator = Model.SortIndicator(column);
+        var text = string.IsNullOrEmpty(indicator) ? label : $"{label} {indicator}";
+        return new HtmlString($"<a class=\"link link-hover text-base-content\" href=\"{url}\">{text}</a>");
+    }
 }
 
 <partial name="_AdminNav" />
@@ -13,11 +34,13 @@
 
 <form method="get" class="mb-4 flex gap-2">
     <input type="hidden" name="pageSize" value="@Model.PageSize" />
+    <input type="hidden" name="SortBy" value="@Model.SortBy" />
+    <input type="hidden" name="SortDir" value="@Model.SortDir" />
     <input type="text" name="Search" value="@Model.Search" class="input" placeholder="Search by username, email or id" />
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-<form method="post" asp-page-handler="RecalculateAllStats" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" class="mb-4" onsubmit="return confirm('Queue a cached stats recalculation for every user? This runs in the background and may take a while for a large user base.');">
+<form method="post" asp-page-handler="RecalculateAllStats" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" asp-route-SortBy="@Model.SortBy" asp-route-SortDir="@Model.SortDir" class="mb-4" onsubmit="return confirm('Queue a cached stats recalculation for every user? This runs in the background and may take a while for a large user base.');">
     <button type="submit" class="btn btn-sm" title="Recalculate cached win-rate stats for every user in the background">Recalculate stats for all users</button>
 </form>
 
@@ -25,10 +48,10 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Username</th>
-                <th>Email</th>
+                <th>@SortHeader("username", "Username")</th>
+                <th>@SortHeader("email", "Email")</th>
                 <th>Roles</th>
-                <th>Created</th>
+                <th>@SortHeader("created", "Created")</th>
                 <th></th>
             </tr>
         </thead>
@@ -56,15 +79,15 @@
                         @if (!user.IsDeleted)
                         {
                             <a class="btn btn-sm" asp-page="./Edit" asp-route-id="@user.Id">Edit roles</a>
-                            <form method="post" asp-page-handler="RecalculateStats" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber">
+                            <form method="post" asp-page-handler="RecalculateStats" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" asp-route-SortBy="@Model.SortBy" asp-route-SortDir="@Model.SortDir">
                                 <button type="submit" class="btn btn-sm" title="Force an immediate recalculation of this user's cached win-rate stats">Recalc stats</button>
                             </form>
-                            <form method="post" asp-page-handler="ToggleBan" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber">
+                            <form method="post" asp-page-handler="ToggleBan" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" asp-route-SortBy="@Model.SortBy" asp-route-SortDir="@Model.SortDir">
                                 <button type="submit" class="btn btn-sm @(isBanned ? "btn-success" : "btn-error")">
                                     @(isBanned ? "Unban" : "Ban")
                                 </button>
                             </form>
-                            <form method="post" asp-page-handler="Delete" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" onsubmit="return confirm('Permanently delete this account? This cannot be undone.');">
+                            <form method="post" asp-page-handler="Delete" asp-route-id="@user.Id" asp-route-Search="@Model.Search" asp-route-PageNumber="@Model.PageNumber" asp-route-SortBy="@Model.SortBy" asp-route-SortDir="@Model.SortDir" onsubmit="return confirm('Permanently delete this account? This cannot be undone.');">
                                 <button type="submit" class="btn btn-sm btn-error">Delete</button>
                             </form>
                         }

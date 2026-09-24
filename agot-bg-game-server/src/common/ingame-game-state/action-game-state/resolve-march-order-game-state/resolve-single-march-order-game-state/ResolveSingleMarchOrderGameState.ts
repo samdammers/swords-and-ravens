@@ -275,9 +275,12 @@ export default class ResolveSingleMarchOrderGameState extends GameState<ResolveM
       this.actionGameState.removeOrderFromRegion(
         startingRegion,
         false,
-        this.house,
-        false,
-        "yellow"
+        undefined,
+        undefined,
+        movesThatTriggerAttack.length > 0 ||
+          movesThatDontTriggerAttack.length > 0
+          ? "yellow"
+          : "grey"
       );
       this.resolveMarchOrderGameState.onResolveSingleMarchOrderGameStateFinish(
         this.house

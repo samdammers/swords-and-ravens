@@ -23,7 +23,7 @@ export default class SerLorasTyrellHouseCardAbility extends HouseCardAbility {
         type: "action-phase-change-order",
         region: afterCombat.combatGameState.defendingRegion.id,
         order: afterCombat.combatGameState.order.id,
-        animate: "white"
+        animate: "grey"
       });
 
       afterCombat.parentGameState.combat.ingameGameState.log({

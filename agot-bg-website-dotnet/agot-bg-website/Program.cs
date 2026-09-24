@@ -7,6 +7,7 @@ using agot_bg_website.Infrastructure.Auth;
 using agot_bg_website.Infrastructure.Chat;
 using agot_bg_website.Services;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -307,6 +308,18 @@ else
 builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
 {
     options.LowercaseUrls = true;
+});
+
+// ASP.NET Core's default per-form-field limit is 4MB. The Admin "Edit game" page posts the raw
+// `serialized_game` JSON back as a plain form field, and that JSON includes the full game log -
+// which keeps growing every round and can get huge for very long games (see Areas/Admin/Pages/
+// Games/Edit.cshtml.cs). Raise the hard framework limit comfortably above EditModel's own
+// MaxJsonFieldLength, so an over-sized save is rejected by EditModel's friendly validation message
+// instead of by this raw low-level limit first.
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit =
+        agot_bg_website.Areas.Admin.Pages.Games.EditModel.MaxJsonFieldLength + 4 * 1024 * 1024;
 });
 
 builder.Services.AddRazorPages(options =>

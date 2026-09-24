@@ -501,6 +501,17 @@ $medium-outline: rgba($outline-color, 0.6);
   transition: all 0.12s linear;
 }
 
+.highlight-grey {
+  filter: drop-shadow(3px 3px 3px grey) drop-shadow(-3px -3px 3px grey)
+    drop-shadow(3px -3px 3px grey) drop-shadow(-3px 3px 3px grey);
+}
+
+.hover-strong-outline-grey:hover {
+  filter: drop-shadow(5px 5px 6px grey) drop-shadow(-5px -5px 6px grey)
+    drop-shadow(5px -5px 6px grey) drop-shadow(-5px 5px 6px grey);
+  transition: all 0.12s linear;
+}
+
 .highlight-red {
   filter: drop-shadow(3px 3px 3px red) drop-shadow(-3px -3px 3px red)
     drop-shadow(3px -3px 3px red) drop-shadow(-3px 3px 3px red);

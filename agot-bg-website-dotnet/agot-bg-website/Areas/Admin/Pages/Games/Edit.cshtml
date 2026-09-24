@@ -20,7 +20,40 @@
         <select asp-for="State" class="select w-full" asp-items="Html.GetEnumSelectList<GameState>()"></select>
     </div>
     <div class="flex flex-col gap-1 mb-3">
-        <label class="label" asp-for="SerializedGameJson">Serialized game (raw JSON)</label>
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <label class="label" asp-for="RawSerializedGameJson">
+                Raw serialized game (backup — untouched, unindented, exactly as stored)
+            </label>
+            <button type="button" class="btn btn-xs" id="copyRawSerializedGameJsonBtn"
+                    onclick="copyTextareaToClipboard('RawSerializedGameJson', this)">
+                Copy to clipboard
+            </button>
+        </div>
+        <textarea asp-for="RawSerializedGameJson" readonly rows="4"
+                   class="textarea font-mono text-xs w-full bg-base-200"
+                   onclick="this.select();"></textarea>
+        <span class="text-xs opacity-70">
+            Read-only. Copy this before editing below, in case a manual edit or our reordering
+            below ever goes wrong.
+        </span>
+    </div>
+    <div class="flex flex-col gap-1 mb-3">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <label class="label" asp-for="SerializedGameJson">
+                Serialized game (raw JSON, editable — minified by default; the game log inside can
+                get huge for very long games)
+            </label>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-xs"
+                        onclick="formatJsonTextarea('SerializedGameJson', 2)">
+                    Pretty-print
+                </button>
+                <button type="button" class="btn btn-xs"
+                        onclick="formatJsonTextarea('SerializedGameJson', 0)">
+                    Minify
+                </button>
+            </div>
+        </div>
         <textarea asp-for="SerializedGameJson" rows="20" class="textarea font-mono text-xs w-full"></textarea>
     </div>
     <div class="flex flex-col gap-1 mb-3">
@@ -37,3 +70,45 @@
       onsubmit="return confirm('Are you sure you want to cancel this game?');">
     <button type="submit" class="btn btn-error">Cancel game</button>
 </form>
+
+@section Scripts {
+    <script>
+        // Client-side only (no server round-trip): lets an admin expand SerializedGameJson to a
+        // readable, indented form for editing, then compact it back down before saving - the
+        // in-browser equivalent of pasting into Notepad++ to pretty-print/minify.
+        function formatJsonTextarea(elementId, indent) {
+            const el = document.getElementById(elementId);
+            try {
+                const parsed = JSON.parse(el.value);
+                el.value = indent > 0 ? JSON.stringify(parsed, null, indent) : JSON.stringify(parsed);
+            } catch (e) {
+                alert("Cannot format: invalid JSON (" + e.message + ")");
+            }
+        }
+
+        // navigator.clipboard requires a secure context (https, or localhost); fall back to the
+        // old select+execCommand trick so this still works on a plain-http local dev setup.
+        async function copyTextareaToClipboard(elementId, button) {
+            const el = document.getElementById(elementId);
+            let copied = false;
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(el.value);
+                    copied = true;
+                } catch {
+                    copied = false;
+                }
+            }
+            if (!copied) {
+                el.select();
+                copied = document.execCommand("copy");
+            }
+
+            const originalText = button.textContent;
+            button.textContent = copied ? "Copied!" : "Copy failed";
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1500);
+        }
+    </script>
+}

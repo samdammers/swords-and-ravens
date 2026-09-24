@@ -34,6 +34,8 @@ export default class GameClient {
   authData: AuthData;
   pingInterval = -1;
   onOwnTurnChange: (() => void) | null = null;
+  // Only alert once per session so a burst of errors doesn't spam the user with modals
+  private hasShownServerMessageErrorDialog = false;
 
   @observable connectionState: ConnectionState = ConnectionState.INITIALIZING;
   @observable entireGame: EntireGame | null = null;
@@ -465,7 +467,24 @@ export default class GameClient {
       }
 
       const wasOwnTurn = this.isOwnTurn();
-      this.entireGame.onServerMessage(message, this);
+      try {
+        this.entireGame.onServerMessage(message, this);
+      } catch (e) {
+        // Without this, an exception thrown while applying a single incremental
+        // update (e.g. a missing region/house lookup) silently aborts just that
+        // message, leaving the client desynced from the server without any trace.
+        console.error(`Error while handling server message "${message.type}"`);
+        console.error(message);
+        console.error(e);
+
+        if (!this.hasShownServerMessageErrorDialog) {
+          this.hasShownServerMessageErrorDialog = true;
+          window.alert(
+            "Something strange happened and your game view may be out of sync. " +
+              "Please open the browser console (F12) and send the error details there to the site admin."
+          );
+        }
+      }
       if (wasOwnTurn != this.isOwnTurn()) {
         this.onOwnTurnChange?.();
       }

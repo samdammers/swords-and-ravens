@@ -545,6 +545,25 @@ export default class SnapshotMigrator {
         if (!snap.gameSnapshot) return snap;
         const house = snap.getHouse(log.house);
         house.removePowerTokens(log.paid);
+        if (!snap.gameSnapshot.ironBank) return snap;
+        if (!snap.gameSnapshot.ironBank.interestCosts) {
+          snap.gameSnapshot.ironBank.interestCosts = [];
+        }
+        const costsOfHouse = snap.gameSnapshot.ironBank.interestCosts.find(
+          (cost) => cost[0] === log.house
+        );
+        if (costsOfHouse) {
+          costsOfHouse[1]++;
+        } else {
+          snap.gameSnapshot.ironBank.interestCosts.push([log.house, 1]);
+        }
+
+        const slot = snap.gameSnapshot.ironBank.loanSlots.findIndex(
+          (lc) => lc == log.loanType
+        );
+        if (slot !== -1) {
+          snap.gameSnapshot.ironBank.loanSlots[slot] = null; // Mark the loan slot as empty
+        }
         return snap;
       }
 
@@ -602,6 +621,13 @@ export default class SnapshotMigrator {
       case "pyromancer-executed": {
         const region = snap.getRegion(log.region);
         region.castleModifier = -1;
+        if (log.upgradeType == "Barrel") {
+          if (!region.barrelModifier) region.barrelModifier = 0;
+          region.barrelModifier++;
+        } else if (log.upgradeType == "Crown") {
+          if (!region.crownModifier) region.crownModifier = 0;
+          region.crownModifier++;
+        }
         return snap;
       }
 

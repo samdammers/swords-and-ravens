@@ -77,12 +77,12 @@ public class IndexModel(ApplicationDbContext db) : PageModel
             query = query.Where(m => EF.Functions.ILike(m.Text, $"%{normalized}%"));
         }
 
-        var paged = await query
-            .OrderByDescending(m => m.CreatedAt)
-            .ToPagedResultAsync(PageNumber, PageSize);
-        // Each page is fetched newest-first (so page 1 is the most recent page of messages), but
-        // reverse it here so within a page the chat reads naturally top-to-bottom, oldest first.
-        Messages = paged.Items.AsEnumerable().Reverse().ToList();
+        // Ascending (oldest first) so page 1 starts at the beginning of the room's history and
+        // paging forward moves chronologically forward, matching how the chat itself reads
+        // top-to-bottom - not the newest-first/reversed-per-page order this page previously used,
+        // which buried a room's opening messages on the last page instead of the first.
+        var paged = await query.OrderBy(m => m.CreatedAt).ToPagedResultAsync(PageNumber, PageSize);
+        Messages = paged.Items;
         Pager = paged.Pager;
     }
 }
